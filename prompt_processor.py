@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import re
 from config import MODEL, TEMPERATURE, MODEL_API_URL # Import model, temperature, and API URL
 
 class PromptProcessor:
@@ -25,7 +26,8 @@ class PromptProcessor:
             "messages": messages,
             "options": {
                 "temperature": self.temperature,
-                "keep_alive": "1h"
+                "keep_alive": "5m",
+                "num_ctx": 32768
             },
             "stream": True
         }
@@ -58,12 +60,33 @@ class PromptProcessor:
         return final_response
 
     def _save_response(self, file_name, content):
-        """Save the model's response to a file."""
-        output_path = os.path.join(self.output_folder, file_name) # Use the relative path directly
-        output_path = os.path.splitext(output_path)[0] + ".md"  # Ensure .md extension
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, "w", encoding='utf-8') as f:
-            f.write(content)
+        """
+        Save the model's response to file(s). 
+        Extracts text contained within triple square brackets (e.g., [[[text]]]). 
+        For each extracted match, saves the content to a new file using the output path
+        with an appended suffix (_1, _2, etc.). If no match is found, saves the original content.
+        """
+        # Use regex to find all matches within triple square brackets
+        matches = re.findall(r'\[\[\[(.*?)\]\]\]', content, re.DOTALL)
+        
+        if matches and len(matches) > 2:
+            # Base file name without extension
+            base_name = os.path.splitext(file_name)[0]
+            for idx, match in enumerate(matches, 1):
+                new_file_name = f"{base_name}_{idx}.md"
+                output_path = os.path.join(self.output_folder, new_file_name)
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+                with open(output_path, "w", encoding="utf-8") as f:
+                    f.write(match.strip())
+        else:
+            # If one or no matches found, save the original content with .md extension
+            if matches:
+                content = matches[0]
+            output_path = os.path.join(self.output_folder, file_name)
+            output_path = os.path.splitext(output_path)[0] + ".md"
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            with open(output_path, "w", encoding="utf-8") as f:
+                f.write(content)
 
     def run(self, initial_content, file_name):
         """Run the processor with the initial content and file name."""

@@ -1,6 +1,7 @@
 import os
 import shutil
 import logging
+import re
 from tabulate import tabulate
 import time
 from config import (
@@ -78,13 +79,40 @@ def read_file(file_path):
         logging.error(f"Failed to read {file_path}: {str(e)}")
         return None
 
-def save_processed_content(output_folder, relative_path, content):
-    """Save processed content to the output folder, ensuring .md extension."""
-    output_file_path = os.path.join(output_folder, relative_path)
-    output_file_path = os.path.splitext(output_file_path)[0] + ".md"
-    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
-    with open(output_file_path, 'w', encoding='utf-8') as output_file:
-        output_file.write(content)
+# def save_processed_content(output_folder, relative_path, content):
+#     # """Save processed content to the output folder, ensuring .md extension."""
+#     # output_file_path = os.path.join(output_folder, relative_path)
+#     # output_file_path = os.path.splitext(output_file_path)[0] + ".md"
+#     # os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+#     # with open(output_file_path, 'w', encoding='utf-8') as output_file:
+#     #     output_file.write(content)
+#     """
+#     Save the model's response to file(s). 
+#     Extracts text contained within triple square brackets (e.g., [[[text]]]). 
+#     For each extracted match, saves the content to a new file using the output path
+#     with an appended suffix (_1, _2, etc.). If no match is found, saves the original content.
+#     """
+#     # Use regex to find all matches within triple square brackets
+#     matches = re.findall(r'\[\[\[(.*?)\]\]\]', content, re.DOTALL)
+    
+#     if matches and len(matches) > 2:
+#         # Base file name without extension
+#         base_name = os.path.splitext(file_name)[0]
+#         for idx, match in enumerate(matches, 1):
+#             new_file_name = f"{base_name}_{idx}.md"
+#             output_path = os.path.join(self.output_folder, new_file_name)
+#             os.makedirs(os.path.dirname(output_path), exist_ok=True)
+#             with open(output_path, "w", encoding="utf-8") as f:
+#                 f.write(match.strip())
+#     else:
+#         # If one or no matches found, save the original content with .md extension
+#         if matches:
+#             content = matches[0]
+#         output_path = os.path.join(self.output_folder, file_name)
+#         output_path = os.path.splitext(output_path)[0] + ".md"
+#         os.makedirs(os.path.dirname(output_path), exist_ok=True)
+#         with open(output_path, "w", encoding="utf-8") as f:
+#             f.write(content)
 
 def log_processing_details(details, process_logger, total_time):
     """Log the processing details to the process log file."""
@@ -135,7 +163,7 @@ def process_files(processor, eligible_files, output_folder, process_logger, erro
             final_content = processor.run(file_content, relative_path)
             processing_time = round(time.time() - start_time, 1)
             
-            save_processed_content(output_folder, relative_path, final_content)
+            # save_processed_content(output_folder, relative_path, final_content)
 
             processing_details.append({
                 "File Name": os.path.basename(file_path),

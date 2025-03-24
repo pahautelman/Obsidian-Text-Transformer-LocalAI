@@ -1,18 +1,18 @@
 # Model and Temperature Configuration
-MODEL = 'llama3' # The name of the language model to use 
-TEMPERATURE = 0.0 # The temperature value for controlling randomness in the model's output
+MODEL = 'mistral-small:24b' # The name of the language model to use 
+TEMPERATURE = 0.05 # The temperature value for controlling randomness in the model's output
 
 # API URL
 MODEL_API_URL = 'http://localhost:11434/api/chat' # The URL of the API endpoint for Ollama
 
 # Configuration
-MAX_FILE_SIZE = 20000 # The maximum file size (in bytes) for processing
-MIN_FILE_SIZE = 10 # The minimum file size (in bytes) for processing
+MAX_FILE_SIZE = 999 * 1000 # The maximum file size (in bytes) for processing
+MIN_FILE_SIZE = 300 # The minimum file size (in bytes) for processing
 
 # File and Directory Paths
-DIRECTORY_PATH = r'D:\Files\Notes\root' # The directory containing the input files
+DIRECTORY_PATH = r'/Users/phautelman/Projects/open-webui-rag/open webui obsidian reformat/input' # The directory containing the input files
 
-OUTPUT_FOLDER = r'D:\Files\Notes\Obsidian_Enhanced' # The directory where the processed output files will be saved
+OUTPUT_FOLDER = r'/Users/phautelman/Projects/open-webui-rag/open webui obsidian reformat/output' # The directory where the processed output files will be saved
 #  **********************************************************
 #  WARNING:  RUNNING THIS SCRIPT WILL DELETE THE OUTPUT FOLDER!
 #  ********************************************************** 
